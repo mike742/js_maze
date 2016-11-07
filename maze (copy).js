@@ -13,8 +13,9 @@ function Maze (c, r) {
 	this.y_min = 1;
 	this.x_max = this.cols - 2;
 	this.y_max = this.rows - 2;
-	this.x_start = this.cols - 2;
- 	this.y_start = this.rows - 2;	
+	//this.x_max = 3;
+	//this.y_max = 3;
+	
 	this.x_end = 1;
 	this.y_end = 1;
 	
@@ -279,33 +280,49 @@ Maze.prototype.prim = function () {
 				p_nodes.push(4);
 			}
 
-			//console.log(p_nodes);
-			//console.log(getRandom(0, p_nodes.length - 1));
-			var rn = p_nodes[getRandom(0, p_nodes.length - 1)];
-			while (p_nodes.length) { p_nodes.pop(); }
+			console.log(p_nodes.length);
+			console.log(getRandom(0, p_nodes.length));
 			
-			switch(rn) {
-				case 1:
-					this.maze[y - 1][x] = this.back;
-				break;
-				case 2:
-					this.maze[y][x + 1] = this.back;
-				break;
+			
+			// N
+			if(y - 1 > this.y_min 
+			   && this.maze[y - 2][x] === this.back
+			   && this.maze[y - 1][x] === this.brick
+			  ) {
 
-				case 3:
-					this.maze[y + 1][x] = this.back;
-				break;
-				case 4:
-					this.maze[y][x - 1] = this.back;
-				break;
+				this.maze[y - 1][x] = this.back;
+			}
+			// E
+			else if(x + 1 < this.x_max 
+			   && this.maze[y][x + 1] === this.brick
+			   && this.maze[y][x + 2] === this.back
+			) {
+				
+				this.maze[y][x + 1] = this.back;
 			}
 			
+			// S
+			else if(	y + 1 < this.y_max 
+			   && this.maze[y + 1][x] === this.brick
+			   && this.maze[y + 2][x] === this.back
+			) {
+
+				this.maze[y + 1][x] = this.back;
+			}
+			// W
+			else if(x - 1 > this.x_min 
+			   && this.maze[y][x - 1] === this.brick
+			   && this.maze[y][x - 2] === this.back
+			) {
+
+				this.maze[y][x - 1] = this.back;
+			}
 			current_node = nodes[n];
 			this.maze[current_node.y][current_node.x] = this.back;
 			nodes.splice(n, 1);
 		}
-	//} while(++t < 2);
-	} while(nodes.length > 0);
+	} while(++t < 2);
+	// } while(nodes.length > 0);
 
 	// replace this.back
 	for (i = 0; i < this.rows; ++i) {
@@ -319,14 +336,11 @@ Maze.prototype.prim = function () {
 
 var cols = 97, rows = 35;
 //cols = 57, rows = 31;
-//cols = 7, rows = 7;
+cols = 7, rows = 7;
 
 var maze = new Maze(cols, rows);
 
-maze.rbt();
-maze.print();
-
-maze = new Maze(cols, rows);
+// maze.rbt();
 maze.prim();
 maze.print();
 
