@@ -6,6 +6,8 @@ function Maze (c, r) {
 	this.back = 9830;
 	this.space = 9617;
 	this.active = 9726; //9724; //9630;
+
+	this.visited = 9618;
 	this.cols = c, this.rows = r;
 	this.maze = new Array();
 	
@@ -104,22 +106,9 @@ Maze.prototype.rbt = function () {
 	var current_node = { x: this.x_max, y: this.y_max };
 	var potent_nodes = new Array(), is_run = true;
 	var x = 0, y = 0;		
-	var t = dt = 100;
-	var name = "";
-	var el = 0; 
-
+	
 	this.maze[this.y_start][this.x_start] = this.active;
-	
-	// change div's id-attr 
-	name = this.y_start + "_" + this.x_start;
-	el = $("div[name = " + name + "]");
-	
-	el.delay(t += dt).queue(function() {
 
-		 $(this).attr('id', "active");
-		 $(this).dequeue();
-	});
-	
 	function getRandom(min, max) {
 	  
 		min = Math.ceil(min);
@@ -165,18 +154,10 @@ Maze.prototype.rbt = function () {
 		if(potent_nodes.length > 0) {
 		
 			// check potential nodes
+			//x =  getRandom(0, potent_nodes.length - 1); 
 			x =  getRandom(0, getRandom(0, potent_nodes.length - 1)); 
 
 			this.maze[ potent_nodes[x].y ][potent_nodes[x].x ] = this.active;
-
-			// change div's id-attr 
-			name = potent_nodes[x].y + "_" + potent_nodes[x].x;
-			el = $("div[name = " + name + "]");
-
-			el.delay(t += dt).queue(function() {
-
-				 $(this).attr('id', "back");
-			});
 
 			// checking next step
 			if(current_node.x == potent_nodes[x].x) {
@@ -190,32 +171,15 @@ Maze.prototype.rbt = function () {
 
 			this.maze[current_node.y][current_node.x] = this.active;
 			
-			name = current_node.y + "_" + current_node.x;
-			el = $("div[name = " + name + "]");
-
-			el.delay(t += dt).queue(function() {
-
-				 $(this).attr('id', "back");
-			});
-			
 		} else {
 			
 			this.maze[current_node.y][current_node.x] = this.back; 
-			
-			name = current_node.y + "_" + current_node.x;
-			el = $("div[name = " + name + "]");
-
-			el.delay(t += dt).queue(function() {
-
-				 $(this).attr('id', "back");
-				 $(this).dequeue();
-			});
-			
 			// return to the previuos node or to the start
 			// N
 			if(this.maze[current_node.y - 1][current_node.x] == this.active) {
 
 				current_node.y -= 1;
+				//this.maze[current_node.y - 1][current_node.x] = this.back; 
 			}
 			// E
 			else if(this.maze[current_node.y][current_node.x + 1] == this.active) {
@@ -244,19 +208,7 @@ Maze.prototype.rbt = function () {
 
 		for (j = 0; j < this.cols; ++j) {
 
-			if(this.maze[i][j] == this.active) {
-			
-				name = i + "_" + j;
-				el = $("div[name = " + name + "]");
-
-				el.delay(t += dt).queue(function() {
-
-					 $(this).attr('id', "space");
-					 $(this).dequeue();
-				});
-			}
 			this.maze[i][j] = this.maze[i][j] == this.back ? this.space : this.maze[i][j];
-			
 		}
 	}
 } 
@@ -267,9 +219,7 @@ Maze.prototype.prim = function () {
 	var p_nodes = new Array();
 	var nodes = new Array();
 	var x = 0, y = 0, n = 0, t = 0;		
-	var time = dt = 100;
-	var name = "";
-	var el = 0; 	
+	
 	function getRandom(min, max) {
 	  
 		min = Math.ceil(min);
@@ -280,15 +230,6 @@ Maze.prototype.prim = function () {
 	do {
 		this.maze[current_node.y][current_node.x] = this.back;
 	
-		name = current_node.y + "_" + current_node.x;
-		el = $("div[name = " + name + "]");
-
-		el.delay(time += dt).queue(function() {
-
-			 $(this).attr('id', "back");
-		});
-		
-		//return;
 		// check for four directions
 		// N
 		if(current_node.y - 1 > this.y_min 
@@ -296,15 +237,6 @@ Maze.prototype.prim = function () {
 
 			nodes.push( {y: current_node.y - 2, x: current_node.x} );
 			this.maze[current_node.y - 2][current_node.x] = this.active;
-			
-			name = (current_node.y - 2) + "_" + current_node.x;
-			el = $("div[name = " + name + "]");
-
-			el.delay(time += dt).queue(function() {
-
-				 $(this).attr('id', "active");
-				 $(this).dequeue();
-			});
 		}
 		// E
 		if(current_node.x + 1 < this.x_max 
@@ -312,15 +244,6 @@ Maze.prototype.prim = function () {
 
 			nodes.push( {y: current_node.y, x: current_node.x + 2} );
 			this.maze[current_node.y][current_node.x + 2] = this.active;
-
-			name = current_node.y + "_" + (current_node.x + 2);
-			el = $("div[name = " + name + "]");
-
-			el.delay(time += dt).queue(function() {
-
-				 $(this).attr('id', "active");
-				 $(this).dequeue();
-			});
 		}
 		// S
 		if(current_node.y + 1 < this.y_max 
@@ -328,15 +251,6 @@ Maze.prototype.prim = function () {
 
 			nodes.push( {y: current_node.y + 2, x: current_node.x} );
 			this.maze[current_node.y + 2][current_node.x] = this.active;
-
-			name = (current_node.y + 2) + "_" + current_node.x;
-			el = $("div[name = " + name + "]");
-
-			el.delay(time += dt).queue(function() {
-
-				 $(this).attr('id', "active");
-				 $(this).dequeue();
-			});
 		}
 		// W
 		if(current_node.x - 1 > this.x_min 
@@ -344,15 +258,6 @@ Maze.prototype.prim = function () {
 
 			nodes.push( {y: current_node.y, x: current_node.x - 2} );
 			this.maze[current_node.y][current_node.x - 2] = this.active;
-
-			name = current_node.y + "_" + (current_node.x - 2);
-			el = $("div[name = " + name + "]");
-
-			el.delay(time += dt).queue(function() {
-
-				 $(this).attr('id', "active");
-				 $(this).dequeue();
-			});
 		}
 	
 		
@@ -363,15 +268,6 @@ Maze.prototype.prim = function () {
 			y = nodes[n].y;
 
 			this.maze[current_node.y][current_node.x] = this.back;
-
-			name = current_node.y + "_" + current_node.x;
-			el = $("div[name = " + name + "]");
-
-			el.delay(time += dt).queue(function() {
-
-				 $(this).attr('id', "back");
-				 $(this).dequeue();
-			});
 
 			// digging the wall
 			
@@ -409,78 +305,32 @@ Maze.prototype.prim = function () {
 				p_nodes.push(4);
 			}
 
+			//console.log(p_nodes);
+			//console.log(getRandom(0, p_nodes.length - 1));
 			var rn = p_nodes[getRandom(0, p_nodes.length - 1)];
 			while (p_nodes.length) { p_nodes.pop(); }
 			
 			switch(rn) {
 				case 1:
 					this.maze[y - 1][x] = this.back;
-
-					name = (y - 1) + "_" + x;
-					el = $("div[name = " + name + "]");
-
-					el.delay(time += dt).queue(function() {
-
-						 $(this).attr('id', "back");
-						 $(this).dequeue();
-					});
-
-					break;
+				break;
 				case 2:
 					this.maze[y][x + 1] = this.back;
-					
-					name = (y) + "_" + (x + 1);
-					el = $("div[name = " + name + "]");
-
-					el.delay(time += dt).queue(function() {
-
-						 $(this).attr('id', "back");
-						 $(this).dequeue();
-					});
-
-					break;
+				break;
 
 				case 3:
 					this.maze[y + 1][x] = this.back;
-					name = (y + 1) + "_" + x;
-					el = $("div[name = " + name + "]");
-
-					el.delay(time += dt).queue(function() {
-
-						 $(this).attr('id', "back");
-						 $(this).dequeue();
-					});
-	
-					break;
+				break;
 				case 4:
 					this.maze[y][x - 1] = this.back;
-					
-					name = (y - 1) + "_" + (x - 1);
-					el = $("div[name = " + name + "]");
-
-					el.delay(time += dt).queue(function() {
-
-						 $(this).attr('id', "back");
-						 $(this).dequeue();
-					});
-
 				break;
 			}
 			
 			current_node = nodes[n];
 			this.maze[current_node.y][current_node.x] = this.back;
-			
-			name = current_node.y + "_" + current_node.x;
-			el = $("div[name = " + name + "]");
-
-			el.delay(time += dt).queue(function() {
-
-				 $(this).attr('id', "back");
-				 $(this).dequeue();
-			});
-
 			nodes.splice(n, 1);
 		}
+	//} while(++t < 2);
 	} while(nodes.length > 0);
 
 	// replace this.back
@@ -493,13 +343,168 @@ Maze.prototype.prim = function () {
 	}
 }
 
+Maze.prototype.pathFinder = function() {
 
-// main Maze demo
-cols = 9, rows = 7;
+	//alert(); return;
+	
+	var current_node = { y: this.y_start, x: this.x_start };
+	var t = 10;
+		dt = 30;
+	var name = "";
+	var el = 0; 
+	var s = 0;
+	var is_run = true;
+	
+	this.maze[current_node.y][current_node.x] = this.back;
+
+	name = current_node.y + "_" + current_node.x;
+	el = $("div[name = " + name + "]");
+
+	el.delay(t += dt).queue(function() {
+
+		 $(this).attr('id', "back");
+		 $(this).dequeue();
+	});
+
+	do {
+		// change div's id-attr 
+
+		// find direction
+		// E
+		if(current_node.x + 1 < this.x_max
+		  && this.maze[current_node.y][current_node.x + 1] == this.space
+		  ) {
+
+			current_node.x += 1;
+			//console.log("go east");
+			this.maze[current_node.y][current_node.x] = this.back;
+
+			name = current_node.y + "_" + current_node.x;
+			el = $("div[name = " + name + "]");
+
+			el.delay(t += dt).queue(function() {
+
+				 $(this).attr('id', "back");
+				 $(this).dequeue();
+			});
+		}
+		// N
+		else if(current_node.y - 1 > 0
+			   && this.maze[current_node.y - 1][current_node.x] == this.space
+			   ) {
+
+			current_node.y -= 1;
+			//console.log("go north");
+			this.maze[current_node.y][current_node.x] = this.back;
+
+			name = current_node.y + "_" + current_node.x;
+			el = $("div[name = " + name + "]");
+
+			el.delay(t += dt).queue(function() {
+
+				 $(this).attr('id', "back");
+				 $(this).dequeue();
+			});
+		}
+		// W
+		else if(current_node.x - 1 > 0
+			   && this.maze[current_node.y][current_node.x - 1] == this.space
+			   ) {
+
+			current_node.x -= 1;
+			//console.log("go west");
+			this.maze[current_node.y][current_node.x] = this.back;
+
+			name = current_node.y + "_" + current_node.x;
+			el = $("div[name = " + name + "]");
+
+			el.delay(t += dt).queue(function() {
+
+				 $(this).attr('id', "back");
+				 $(this).dequeue();
+			});
+		}
+		// S
+		else if(current_node.y + 1 < this.y_max
+			   && this.maze[current_node.y + 1][current_node.x] == this.space
+			   ) {
+
+			current_node.y += 1;
+			//console.log("go south");
+			this.maze[current_node.y][current_node.x] = this.back;
+
+			name = current_node.y + "_" + current_node.x;
+			el = $("div[name = " + name + "]");
+
+			el.delay(t += dt).queue(function() {
+
+				 $(this).attr('id', "back");
+				 //$(this).dequeue();
+			});
+		}
+		else {
+		
+			this.maze[current_node.y][current_node.x] = this.visited;
+			
+			name = current_node.y + "_" + current_node.x;
+			el = $("div[name = " + name + "]");
+
+			el.delay(t += dt).queue(function() {
+
+				 $(this).attr('id', "visited");
+				 $(this).dequeue();
+			});
+
+
+			// return on own steps
+			// find direction
+			// E
+			if(current_node.x + 1 <= this.x_max
+			  && this.maze[current_node.y][current_node.x + 1] == this.back
+			  ) {
+
+				current_node.x += 1;
+				//console.log("go east");
+			}
+			// N
+			else if(current_node.y - 1 > 0
+				   && this.maze[current_node.y - 1][current_node.x] == this.back
+				   ) {
+
+				current_node.y -= 1;
+			}
+			// W
+			else if(current_node.x - 1 > 0
+				   && this.maze[current_node.y][current_node.x - 1] == this.back
+				   ) {
+
+				current_node.x -= 1;
+			}
+			// S
+			else if(current_node.y + 1 <= this.y_max
+				   && this.maze[current_node.y + 1][current_node.x] == this.back
+				   ) {
+
+				current_node.y += 1;
+			}
+			
+		}
+
+		if(current_node.x == this.x_end && current_node.y == this.y_end) { is_run = false; }
+		
+	} while (is_run);
+}
+
+// main
+//var cols = 237, rows = 127;
+
+cols = 47, rows = 35;
+// cols = 9, rows = 7;
 
 var maze = new Maze(cols, rows);
-maze.print_div();
-
 //maze.rbt();
 maze.prim();
+maze.print_div();
+//maze.pathFinder();
+//maze.print_div();
 

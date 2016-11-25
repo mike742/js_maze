@@ -3,15 +3,13 @@
 		<script src="jquery.js"></script>
 		<script src="maze.js"></script>
 		<style>
-			/*
-			body {color: #ff5c33;} <!-- #ff3300 -->
-			*/
+
 
 			.brick {
 				background-color: #ff5c33;
 				/*border: 1px #c50 solid;*/
-				width: 5px;
-				height: 5px;
+				width: 15px;
+				height: 15px;
 				float: left;
 			}
 			#space {
@@ -37,5 +35,7 @@
 		</style>
 	</head>
 	<body>
+		<h2 style="font-family: Arial;"> &nbsp; &nbsp; Maze solving algorithm</h2>
+		&nbsp; &nbsp; <input type="button" name="find_path" value="Find Path" onclick="maze.pathFinder();" />
 	</body> 
 </html>
